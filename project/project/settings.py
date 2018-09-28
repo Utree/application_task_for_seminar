@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
             ],
         },
     },
@@ -118,5 +119,12 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+# 本来, imageやcss, jsファイルのような静的ファイルは別のサーバーで管理すべき。
 
+# staticファイルは"https://<URL>/static/"URL下でアクセス可
 STATIC_URL = '/static/'
+
+# staticファイルは"project/static"フォルダ下で管理する
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]

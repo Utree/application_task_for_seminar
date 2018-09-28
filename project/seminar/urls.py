@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # パラメータなし
+    # アップロード先のパス
+    path('form', views.form, name='form'),
+    # トップページ
     path('', views.index, name='index'),
 ]

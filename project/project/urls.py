@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf.urls import include, url
 
 urlpatterns = [
+    # すべてのパス管理をseminarアプリに任せる
     url('^', include('seminar.urls')),
     # path('admin/', admin.site.urls),
 ]

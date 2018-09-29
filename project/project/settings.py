@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'api_v1.apps.ApiV1Config',
 ]
 
 MIDDLEWARE = [
@@ -114,13 +116,13 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-# 本来, imageやcss, jsファイルのような静的ファイルは別のサーバーで管理すべき。
 
+# 本来, imageやcss, jsファイルのような静的ファイルは別のサーバーで管理すべき。
 # staticファイルは"https://<URL>/static/"URL下でアクセス可
 STATIC_URL = '/static/'
 
@@ -128,3 +130,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# 本来、ここも、S3などの外部サーバーで管理すべき。
+# アップロードされた画像を公開する用のURL
+MEDIA_URL = '/media/'
+# アップロードされたメディアファイルを保存するディレクトリ
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploaded_files')

@@ -16,9 +16,24 @@ Including another URLconf
 from django.contrib import admin
 # from django.urls import path
 from django.conf.urls import include, url
+# uploaded_files下を公開するための設定
+from django.conf import settings
+from django.conf.urls.static import static
+
+# # api viewer
+# from api_v1.urls import router as api_v1_router
+from api_v1 import views
 
 urlpatterns = [
     # すべてのパス管理をseminarアプリに任せる
     url('^', include('seminar.urls')),
+    
+    # apiアプリ
+    url(r'^api/', include('api_v1.urls')),
+    
+    # # api viewer
+    # url(r'^api/', include(api_v1_router.urls)),
+    
+    # 管理画面
     # path('admin/', admin.site.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

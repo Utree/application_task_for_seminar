@@ -136,3 +136,11 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 # アップロードされたメディアファイルを保存するディレクトリ
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploaded_files')
+
+# パスワードhasher
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]

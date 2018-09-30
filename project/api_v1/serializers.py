@@ -12,7 +12,7 @@ class UserSerializer(serializers.Serializer):
         
 # トークンテーブルのシリアライザ
 class TokenSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
+    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     token = serializers.CharField(required=True, allow_blank=False, max_length=50)
     # 新規作成
     def create(self, validated_data):
@@ -30,7 +30,7 @@ class TokenSerializer(serializers.Serializer):
 # イメージテーブルのシリアライザ
 class ImageSerializer(serializers.Serializer):
     url = serializers.ImageField(required=True)
-    user_id = serializers.IntegerField(required=True)
+    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     
     # 新規作成
     def create(self, validated_data):

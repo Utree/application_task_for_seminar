@@ -8,7 +8,7 @@ from api_v1.serializers import UserSerializer, TokenSerializer, ImageSerializer
 from django.contrib.auth.hashers import make_password
 
 
-@csrf_exempt
+@csrf_exempt # APIなので、csrf対策を無効にする
 def register(request):
     # POST
     if request.method == 'POST':
@@ -30,12 +30,15 @@ def register(request):
             # 保存
             try:
                 serializer.save()
+                # ユーザーIDを取得
+                user = User.objects.get(account_name=serializer.data["account_name"])
                 # トークン生成
-                # トークン保存
-                # トークン付与
-                return HttpResponse("登録完了", status=201)
+                token = Token.create(user)
+                # ユーザーにトークンを渡す
+                return HttpResponse(token, status=201)
             # account_nameがかぶったときなどのエラー処理
-            except:
+            except Exception as e:
+                print(e)
                 return HttpResponse("ユーザー名が使われています", status=400)
         # 不正なリクエストの場合
         return HttpResponse("不正なリクエスト", status=400)

@@ -43,12 +43,9 @@ class Token(models.Model):
     # トークン付与
     @staticmethod # インスタンス変数、インスタンスメソッドにアクセスしない時(selfを使わない時につけるデコレータ)
     def create(user):
-        try:
-            # ユーザーの既存のトークンを取得
-            if Token.objects.get(user_id=user).exists():
-                Token.objects.get(user_id=user).delete()
-        except:
-            pass
+        # ユーザーの既存のトークンを取得
+        if Token.objects.filter(user_id=user.id).count():
+            Token.objects.filter(user_id=user.id).delete()
         
         # トークン生成
         dt = timezone.now()

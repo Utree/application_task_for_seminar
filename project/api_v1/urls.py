@@ -13,5 +13,6 @@ from django.conf.urls import url
 from api_v1 import views
 urlpatterns = [
     url(r'^register/$', views.register),
+    url(r'^login/$', views.login),
     url(r'^users/(?P<pk>[0-9]+)/$', views.user_detail),
 ]

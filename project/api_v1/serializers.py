@@ -14,18 +14,6 @@ class UserSerializer(serializers.Serializer):
 class TokenSerializer(serializers.Serializer):
     user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     token = serializers.CharField(required=True, allow_blank=False, max_length=50)
-    # 新規作成
-    def create(self, validated_data):
-        return Token.objects.create(**validated_data)
-    
-    # 更新
-    def update(self, instance, validated_data):
-        instance.user_id = validated_data.get("user_id", instance.user_id)
-        instance.token = validated_data.get("token", instance.token)
-        instance.save()
-        return instance
-    
-    # 削除
 
 # イメージテーブルのシリアライザ
 class ImageSerializer(serializers.Serializer):

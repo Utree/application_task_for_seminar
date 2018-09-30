@@ -5,9 +5,9 @@ from rest_framework.parsers import JSONParser
 from api_v1.models import User, Token, Image
 from api_v1.serializers import UserSerializer, TokenSerializer, ImageSerializer
 # パスワードhasher
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 
-
+# ユーザー登録API
 @csrf_exempt # APIなので、csrf対策を無効にする
 def register(request):
     # POST
@@ -45,15 +45,36 @@ def register(request):
     else:
         return HttpResponse("不正なリクエスト", status=405)
 
-# @csrf_exempt
-# def login(request):
-#     # POST
-#     if request.method == 'POST':
-#         # JSONをパース
-#         data = JSONParser().parse(request)
-#         # Userモデルに当てはめる
-#         serializer = UserSerializer(data=data)
-#         if serializer.is_valid()
+# ユーザーログインAPI
+@csrf_exempt # APIなので、csrf対策を無効にする
+def login(request):
+    # POST
+    if request.method == 'POST':
+        # JSONをパース
+        data = JSONParser().parse(request)
+        # Userモデルに当てはめる
+        serializer = UserSerializer(data=data)
+        # 有効なものかを判断する
+        if serializer.is_valid():
+            try:
+                # ユーザーを取得
+                user = User.objects.get(account_name=serializer.initial_data["account_name"])
+            except:
+                return HttpResponse("ユーザーが存在しません", status=400)
+            
+            # ログイン成功時
+            if check_password(serializer.data["password"], user.password):
+                # トークン生成
+                token = Token.create(user)
+                # ユーザーにトークンを渡す
+                return HttpResponse(token, status=200)
+            # ログイン失敗時
+            else:
+                return HttpResponse("ログイン失敗", status=400)
+        # 不正なリクエスト
+        return HttpResponse("不正なリクエスト", status=400)
+    else:
+        return HttpResponse("不正なリクエスト", status=405)
             
 
 @csrf_exempt

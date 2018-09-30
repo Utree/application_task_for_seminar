@@ -53,8 +53,7 @@ class TokenSerializer(serializers.Serializer):
 # イメージテーブルのシリアライザ
 class ImageSerializer(serializers.Serializer):
     # バリデーションをかける
-    url = serializers.ImageField(required=True)
-    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    url = serializers.ImageField()
     
     # 新規作成
     def create(self, validated_data):

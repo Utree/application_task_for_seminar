@@ -105,12 +105,13 @@ def images(request):
     
     # GETメソッド
     if request.method == 'GET':
-        if Image.objects.filter(user_id=user.id).count():
-            images = Image.objects.filter(user_id=user.id)
-            print(images)
-        else:
-            pass
-        return HttpResponse("get", status=200)
+        url_list = []
+        for i in Image.objects.filter(user_id=user.id):
+            url_list.append(str(i.url))
+        data = ("{'image_url': " + str(url_list) + "}").replace("'", '"')
+        response = HttpResponse(data, status=200)
+        response['content-type'] = 'application/json; charset=utf-8'
+        return response
     # POSTメソッド
     elif request.method == 'POST':
         return HttpResponse("post", status=200)

@@ -24,7 +24,7 @@ class Token(models.Model):
     # トークンID
     token_id = models.AutoField(primary_key=True)
     # ユーザーID
-    user_id = models.IntegerField(null=False, blank=False)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     # トークン
     token = models.CharField(
         max_length=50,
@@ -42,7 +42,7 @@ class Image(models.Model):
     # イメージURL
     url = models.ImageField(upload_to="api_v1/images")
     # ユーザーID
-    user_id = models.IntegerField(null=False, blank=False)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     # イメージ追加時のタイムスタンプ
     creation_date = models.DateTimeField(auto_now_add=True)
     

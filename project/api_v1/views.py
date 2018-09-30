@@ -6,6 +6,9 @@ from api_v1.models import User, Token, Image
 from api_v1.serializers import UserSerializer, TokenSerializer, ImageSerializer
 # パスワードhasher
 from django.contrib.auth.hashers import make_password, check_password
+# Json形成
+from django.utils.six import BytesIO
+
 
 # ユーザー登録API
 @csrf_exempt # APIなので、csrf対策を無効にする
@@ -33,9 +36,12 @@ def register(request):
                 # ユーザーIDを取得
                 user = User.objects.get(account_name=serializer.data["account_name"])
                 # トークン生成
-                token = Token.create(user)
+                token = TokenSerializer.create(user)
                 # ユーザーにトークンを渡す
-                return HttpResponse(token, status=201)
+                data = '{"token": "' + token +'"}'
+                response = HttpResponse(data, status=200)
+                response['content-type'] = 'application/json; charset=utf-8'
+                return response
             # account_nameがかぶったときなどのエラー処理
             except Exception as e:
                 print(e)
@@ -65,9 +71,12 @@ def login(request):
             # ログイン成功時
             if check_password(serializer.data["password"], user.password):
                 # トークン生成
-                token = Token.create(user)
+                token = TokenSerializer.create(user)
                 # ユーザーにトークンを渡す
-                return HttpResponse(token, status=200)
+                data = '{"token": "' + token +'"}'
+                response = HttpResponse(data, status=200)
+                response['content-type'] = 'application/json; charset=utf-8'
+                return response
             # ログイン失敗時
             else:
                 return HttpResponse("ログイン失敗", status=400)
@@ -76,19 +85,41 @@ def login(request):
     else:
         return HttpResponse("不正なリクエスト", status=405)
             
-
+# 画像API
 @csrf_exempt
-def user_detail(request, pk):
-    try:
-        users = User.objects.get(pk=pk)
-    except User.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = UserSerializer(users)
-        return JsonResponse(serializer.data)
+def images(request):
+    # トークンの認証
+    if request.META['HTTP_AUTHORIZATION']:
+        # Bearerスキームを取り除いて、tokenを認証し、userオブジェクトを得る
+        user = TokenSerializer.auth(request.META['HTTP_AUTHORIZATION'].replace("Bearer ", ""))
+        # トークンに紐付けられたアカウントが無かった場合
+        if not user:
+            response = HttpResponse("token is wrong", status=401)
+            response["WWW-Authenticate"] = 'realm="The access token was expired", error="invalid_token"'
+            return response
+    # トークンが空の場合
+    else:
+        response = HttpResponse("token is empty", status=401)
+        response["WWW-Authenticate"] = 'realm="token is empty", error="invalid_token"'
+        return response
     
-    return HttpResponse(status=405)
+    # GETメソッド
+    if request.method == 'GET':
+        if Image.objects.filter(user_id=user.id).count():
+            images = Image.objects.filter(user_id=user.id)
+            print(images)
+        else:
+            pass
+        return HttpResponse("get", status=200)
+    # POSTメソッド
+    elif request.method == 'POST':
+        return HttpResponse("post", status=200)
+    # その他
+    else:
+        return HttpResponse("不正なリクエスト", status=405)
+
+
+
 
 # api viewer
 import django_filters

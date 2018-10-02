@@ -9,7 +9,7 @@ import hashlib
 
 # ユーザーテーブルのシリアライザ
 class UserSerializer(serializers.Serializer):
-    # バリデーションをかける
+    # 出力項目を設定
     account_name = serializers.CharField(required=True, allow_blank=False, max_length=25)
     password = serializers.CharField(required=True, allow_blank=False, max_length=95)
     
@@ -17,9 +17,14 @@ class UserSerializer(serializers.Serializer):
     def create(self, validated_data):
         return User.objects.create(**validated_data)
         
+    # ユーザー情報の取得
+    @staticmethod
+    def select(user_name):
+        return User.objects.get(account_name=user_name)
+        
 # トークンテーブルのシリアライザ
 class TokenSerializer(serializers.Serializer):
-    # バリデーションをかける
+    # 出力項目を設定
     user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     token = serializers.CharField(required=True, allow_blank=False, max_length=50)
     
@@ -52,9 +57,22 @@ class TokenSerializer(serializers.Serializer):
 
 # イメージテーブルのシリアライザ
 class ImageSerializer(serializers.Serializer):
-    # バリデーションをかける
+    # 出力項目を設定
     url = serializers.ImageField()
     
-    # 新規作成
-    def create(self, validated_data):
-        return Image.objects.create(**validated_data)
+    # 所有画像をリストにして、返す
+    @staticmethod
+    def select(id):
+        # 画像URLをリストにする
+        url_list = []
+        for i in Image.objects.filter(user_id=id):
+            url_list.append(str(i.url))
+        # json形式に変換して、返す
+        return ("{'image_url': " + str(url_list) + "}").replace("'", '"')
+    
+    # 画像URLの登録
+    @staticmethod
+    def create(file_path, user_info):
+        insert_data = Image(url="api_v1/images/" + file_path, user_id=user_info)
+        insert_data.save()
+    

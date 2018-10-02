@@ -1,13 +1,26 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+# JSONパーサー&レンダラー
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from api_v1.models import User, Token, Image
+# シリアライザ (db操作用のController的な役割)
 from api_v1.serializers import UserSerializer, TokenSerializer, ImageSerializer
 # パスワードhasher
 from django.contrib.auth.hashers import make_password, check_password
 # Json形成
 from django.utils.six import BytesIO
+# ハッシュ化
+import hashlib
+# タイムスタンプ用
+from django.utils import timezone
+# ファイル名取得
+import os.path
+# import for file upload
+import os
+
+# ファイルの保存先のパス
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOADE_DIR = os.path.join(BASE_DIR, 'uploaded_files/api_v1/images')
 
 
 # ユーザー登録API
@@ -23,7 +36,7 @@ def register(request):
         # バリデーションを掛ける(パスワードはハッシュ化するので、空文字判定を先に行う)
        # パスワードが空かを確認する
         if serializer.initial_data["password"] == "":
-            return HttpResponse("使用できないパスワードです。", status=400)
+            return HttpResponse("使用できないパスワードです。", status=403)
         
         # パスワードをハッシュ化
         serializer.initial_data["password"] = make_password(serializer.initial_data["password"], hasher='argon2')
@@ -34,7 +47,7 @@ def register(request):
             try:
                 serializer.save()
                 # ユーザーIDを取得
-                user = User.objects.get(account_name=serializer.data["account_name"])
+                user = UserSerializer.select(user_name=serializer.initial_data["account_name"])
                 # トークン生成
                 token = TokenSerializer.create(user)
                 # ユーザーにトークンを渡す
@@ -45,11 +58,11 @@ def register(request):
             # account_nameがかぶったときなどのエラー処理
             except Exception as e:
                 print(e)
-                return HttpResponse("ユーザー名が使われています", status=400)
+                return HttpResponse("ユーザー名が使われています", status=409)
         # 不正なリクエストの場合
         return HttpResponse("不正なリクエスト", status=400)
     else:
-        return HttpResponse("不正なリクエスト", status=405)
+        return HttpResponse("不正なリクエスト", status=400)
 
 # ユーザーログインAPI
 @csrf_exempt # APIなので、csrf対策を無効にする
@@ -64,9 +77,9 @@ def login(request):
         if serializer.is_valid():
             try:
                 # ユーザーを取得
-                user = User.objects.get(account_name=serializer.initial_data["account_name"])
+                user = UserSerializer.select(user_name=serializer.initial_data["account_name"])
             except:
-                return HttpResponse("ユーザーが存在しません", status=400)
+                return HttpResponse("ユーザーが存在しません", status=401)
             
             # ログイン成功時
             if check_password(serializer.data["password"], user.password):
@@ -79,11 +92,11 @@ def login(request):
                 return response
             # ログイン失敗時
             else:
-                return HttpResponse("ログイン失敗", status=400)
+                return HttpResponse("ログイン失敗", status=401)
         # 不正なリクエスト
         return HttpResponse("不正なリクエスト", status=400)
     else:
-        return HttpResponse("不正なリクエスト", status=405)
+        return HttpResponse("不正なリクエスト", status=400)
             
 # 画像API
 @csrf_exempt
@@ -105,36 +118,62 @@ def images(request):
     
     # GETメソッド
     if request.method == 'GET':
-        url_list = []
-        for i in Image.objects.filter(user_id=user.id):
-            url_list.append(str(i.url))
-        data = ("{'image_url': " + str(url_list) + "}").replace("'", '"')
-        response = HttpResponse(data, status=200)
+        # レスポンスをつくる
+        response = HttpResponse(ImageSerializer.select(user.id), status=200)
         response['content-type'] = 'application/json; charset=utf-8'
         return response
     # POSTメソッド
     elif request.method == 'POST':
-        return HttpResponse("post", status=200)
+        # ファイルアップロード（複数）
+        # ファイルのリストをとる
+        files = request.FILES.getlist('file[]')
+    
+        # 一つづつファイル操作
+        for i in range(len(files)):
+            # ファイル名と拡張子を別にする
+            name, ext = os.path.splitext(str(files[i]))
+            # バリデーションを掛ける
+            if (ext == '.jpeg') or (ext == '.png') or (ext == 'jpg'):
+                # ファイルネームのハッシュ化(URLに使えない文字を消す為)
+                name = hashlib.sha1(name.encode('utf-8')).hexdigest()[:10]
+                # タイムスタンプを付けて、ファイルのリネーム
+                dt = timezone.now()
+                file_name = name + dt.strftime('%Y%m%d%H%M%S%f') + ext
+                # パスの指定
+                path1 = os.path.join(UPLOADE_DIR, file_name)
+                # ファイルを保存
+                with open(path1, 'wb') as ff:
+                    ff.write(files[i].file.read())
+        
+                # データベースに保存
+                ImageSerializer.create(file_path=file_name, user_info=user)
+            # 画像ファイル以外の拡張子が来た時
+            else:
+                return HttpResponse("jpeg, jpg, pngのみ対応しています。", status=406)
+    
+        return HttpResponse("Success")
+            
     # その他
     else:
-        return HttpResponse("不正なリクエスト", status=405)
+        return HttpResponse("不正なリクエスト", status=400)
 
 
 
 
-# api viewer
-import django_filters
-from rest_framework import viewsets, filters
+# # api viewer(debug用)
+# import django_filters
+# from rest_framework import viewsets, filters
+# from api_v1.models import User, Token, Image
 
-# Create your views here.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# # Create your views here.
+# class UserViewSet(viewsets.ModelViewSet):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
 
-class TokenViewSet(viewsets.ModelViewSet):
-    queryset = Token.objects.all()
-    serializer_class = TokenSerializer
+# class TokenViewSet(viewsets.ModelViewSet):
+#     queryset = Token.objects.all()
+#     serializer_class = TokenSerializer
 
-class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Image.objects.all()
-    serializer_class = ImageSerializer
+# class ImageViewSet(viewsets.ModelViewSet):
+#     queryset = Image.objects.all()
+#     serializer_class = ImageSerializer

@@ -9,7 +9,7 @@ https://paper.dropbox.com/doc/--AN3gfwhLeAgvbBqGDL2Aw~5zAQ-vBWRDhzRQswBdOwxrbKtQ
 
 ### 全体のアーキテクチャ
 
-### APIドキュメント (仮)
+### APIドキュメント
 https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
 
 ### DB ER図 (仮)

@@ -23,4 +23,4 @@ https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
   - Django
 
 ## サイト
-- http://test.com/
+- https://application-task-for-seminar-yuukic9.c9users.io/

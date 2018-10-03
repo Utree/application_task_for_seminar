@@ -126,7 +126,11 @@ def images(request):
     elif request.method == 'POST':
         # ファイルアップロード（複数）
         # ファイルのリストをとる
-        files = request.FILES.getlist('file[]')
+        try:
+            files = request.FILES.getlist('file[]')
+        except Exception as e:
+            print(e)
+            return HttpResponse("file is empty", status=400)
     
         # 一つづつファイル操作
         for i in range(len(files)):

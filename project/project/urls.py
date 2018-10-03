@@ -25,7 +25,7 @@ from django.conf.urls.static import static
 from api_v1 import views
 
 urlpatterns = [
-    # すべてのパス管理をseminarアプリに任せる
+    # ルートをseminarアプリに任せる
     url('^', include('seminar.urls')),
     
     # apiアプリ

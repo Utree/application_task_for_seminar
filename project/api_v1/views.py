@@ -157,25 +157,29 @@ def images(request):
                 with open(path1, 'wb') as ff:
                     ff.write(files[i].file.read())
                 
-                # imageFilterを掛ける (別スレッドで実行)
-                if request.META['HTTP_IMAGE_FILTER_FLAG'] == 'anime':
-                    t = threading.Thread(target=Anime, args=(file_name,))
-                    t.start()
-                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'canny':
-                    t = threading.Thread(target=Canny, args=(file_name,))
-                    t.start()
-                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'gray':
-                    t = threading.Thread(target=Gray, args=(file_name,))
-                    t.start()
-                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'laplacian':
-                    t = threading.Thread(target=Laplacian, args=(file_name,))
-                    t.start()
-                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'sobel':
-                    t = threading.Thread(target=Sobel, args=(file_name,))
-                    t.start()
-                else:
+                # ヘッダを確認
+                try:
+                    # imageFilterを掛ける (別スレッドで実行)
+                    if request.META['HTTP_IMAGE_FILTER_FLAG'] == 'anime':
+                        t = threading.Thread(target=Anime, args=(file_name,))
+                        t.start()
+                    elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'canny':
+                        t = threading.Thread(target=Canny, args=(file_name,))
+                        t.start()
+                    elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'gray':
+                        t = threading.Thread(target=Gray, args=(file_name,))
+                        t.start()
+                    elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'laplacian':
+                        t = threading.Thread(target=Laplacian, args=(file_name,))
+                        t.start()
+                    elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'sobel':
+                        t = threading.Thread(target=Sobel, args=(file_name,))
+                        t.start()
+                    else:
+                        pass
+                # ヘッダが無かった場合
+                except:
                     pass
-                
         
                 # データベースに保存
                 ImageSerializer.create(file_path=file_name, user_info=user)

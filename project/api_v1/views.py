@@ -17,6 +17,14 @@ from django.utils import timezone
 import os.path
 # import for file upload
 import os
+# 別スレッドで処理する用
+import threading
+# イメージフィルタ
+from api_v1.image_filter.anime import Anime
+from api_v1.image_filter.canny import Canny
+from api_v1.image_filter.gray import Gray
+from api_v1.image_filter.laplacian import Laplacian
+from api_v1.image_filter.sobel import Sobel
 
 # ファイルの保存先のパス
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -137,7 +145,7 @@ def images(request):
             # ファイル名と拡張子を別にする
             name, ext = os.path.splitext(str(files[i]))
             # バリデーションを掛ける
-            if (ext == '.jpeg') or (ext == '.png') or (ext == 'jpg'):
+            if (ext == '.jpeg') or (ext == '.png') or (ext == '.jpg'):
                 # ファイルネームのハッシュ化(URLに使えない文字を消す為)
                 name = hashlib.sha1(name.encode('utf-8')).hexdigest()[:10]
                 # タイムスタンプを付けて、ファイルのリネーム
@@ -148,6 +156,26 @@ def images(request):
                 # ファイルを保存
                 with open(path1, 'wb') as ff:
                     ff.write(files[i].file.read())
+                
+                # imageFilterを掛ける (別スレッドで実行)
+                if request.META['HTTP_IMAGE_FILTER_FLAG'] == 'anime':
+                    t = threading.Thread(target=Anime, args=(file_name,))
+                    t.start()
+                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'canny':
+                    t = threading.Thread(target=Canny, args=(file_name,))
+                    t.start()
+                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'gray':
+                    t = threading.Thread(target=Gray, args=(file_name,))
+                    t.start()
+                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'laplacian':
+                    t = threading.Thread(target=Laplacian, args=(file_name,))
+                    t.start()
+                elif request.META['HTTP_IMAGE_FILTER_FLAG'] == 'sobel':
+                    t = threading.Thread(target=Sobel, args=(file_name,))
+                    t.start()
+                else:
+                    pass
+                
         
                 # データベースに保存
                 ImageSerializer.create(file_path=file_name, user_info=user)

@@ -20,7 +20,13 @@ https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
 - 言語: Python3
 - データベース: SQLite
 - ライブラリ
-  - Django
+  - Django==2.1.2
+  - django-filter==2.0.0
+  - djangorestframework==3.8.2
+  - numpy==1.15.2
+  - opencv-python==3.4.3.18
+  - Pillow==5.3.0
+  - pytz==2018.5
 
 ## サイト
 - https://application-task-for-seminar-yuukic9.c9users.io/

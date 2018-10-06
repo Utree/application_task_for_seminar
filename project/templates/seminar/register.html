@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Material Design for Bootstrap fonts and icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+    
+        <!-- Material Design for Bootstrap CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+        
+        <title>タイトル</title>
+    </head>
+    <body class="text-center">
+        <div class='container'>
+          <div class='row'>
+            <div class="form-signin col-12 row center-block" method='post' action=''>
+              <div class='col-12'>
+                <div style='height:150px;'><!-- 高さ調整 --></div>
+                <h1 class="h3 mb-3 font-weight-normal">画像編集サイト</h1>
+                <br>
+                <input type="text" id="account_field" class="form-control" placeholder="アカウント名" required autofocus>
+                <input type="password" id="password_field" class="form-control" placeholder="パスワード" required>
+    
+                <button id="register_button" class="btn btn-lg btn-primary btn-block" type="submit">登録</button>
+              </div>
+              <a href="login" class='col-12 text-muted'>アカウントを持っている</a>
+            </form>
+            {{ message }}
+          </div>
+        </div>
+        
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+        <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+        
+        <!-- Optional JavaScript -->
+        <script>
+          $('#register_button').click(
+            function() {
+              var url = '/api/v1/register/';
+              var account_name = $('#account_field').val();
+              var password = $('#password_field').val();
+              $.ajax({
+                url: url,
+                type:'POST',
+                dataType: 'json',
+                data: '{"account_name": "' + account_name + '", "password": "' + "password" + '"}',
+                timeout: 3000,
+              }).done(function(response) {
+                // localStorageに保存
+                localStorage.setItem('token', response.token);
+                
+                // 画面遷移
+                window.location.href = '/home';
+              }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.responseText);
+              })
+            })
+        </script>
+    </body>
+</html>

@@ -139,7 +139,6 @@ def images(request):
         except Exception as e:
             print(e)
             return HttpResponse("file is empty", status=400)
-    
         # 一つづつファイル操作
         for i in range(len(files)):
             # ファイル名と拡張子を別にする
@@ -156,30 +155,31 @@ def images(request):
                 # ファイルを保存
                 with open(path1, 'wb') as ff:
                     ff.write(files[i].file.read())
+                    
                 
-                # ヘッダを確認
-                try:
-                    # imageFilterを掛ける (別スレッドで実行)
-                    if str(request.POST['image_filter']) == 'anime':
-                        t = threading.Thread(target=Anime, args=(file_name,))
-                        t.start()
-                    elif str(request.POST['image_filter']) == 'canny':
-                        t = threading.Thread(target=Canny, args=(file_name,))
-                        t.start()
-                    elif str(request.POST['image_filter']) == 'gray':
-                        t = threading.Thread(target=Gray, args=(file_name,))
-                        t.start()
-                    elif str(request.POST['image_filter']) == 'laplacian':
-                        t = threading.Thread(target=Laplacian, args=(file_name,))
-                        t.start()
-                    elif str(request.POST['image_filter']) == 'sobel':
-                        t = threading.Thread(target=Sobel, args=(file_name,))
-                        t.start()
-                    else:
-                        pass
-                # ヘッダが無かった場合
-                except:
-                    pass
+                # # ヘッダを確認
+                # try:
+                #     # imageFilterを掛ける (別スレッドで実行)
+                #     if str(request.POST['image_filter']) == 'anime':
+                #         t = threading.Thread(target=Anime, args=(file_name,))
+                #         t.start()
+                #     elif str(request.POST['image_filter']) == 'canny':
+                #         t = threading.Thread(target=Canny, args=(file_name,))
+                #         t.start()
+                #     elif str(request.POST['image_filter']) == 'gray':
+                #         t = threading.Thread(target=Gray, args=(file_name,))
+                #         t.start()
+                #     elif str(request.POST['image_filter']) == 'laplacian':
+                #         t = threading.Thread(target=Laplacian, args=(file_name,))
+                #         t.start()
+                #     elif str(request.POST['image_filter']) == 'sobel':
+                #         t = threading.Thread(target=Sobel, args=(file_name,))
+                #         t.start()
+                #     else:
+                #         pass
+                # # ヘッダが無かった場合
+                # except:
+                #     pass
         
                 # データベースに保存
                 ImageSerializer.create(file_path=file_name, user_info=user)

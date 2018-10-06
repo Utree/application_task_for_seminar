@@ -9,3 +9,12 @@ UPLOADE_DIR = os.path.join(BASE_DIR, 'static/seminar/uploaded')
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
+    
+def login(request):
+    return render(request, 'seminar/login.html')
+
+def register(request):
+    return render(request, 'seminar/register.html')
+
+def home(request):
+    return render(request, 'seminar/home.html')

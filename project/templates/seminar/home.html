@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PHOTOS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://blackrockdigital.github.io/startbootstrap-creative/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+    <!-- Plugin CSS -->
+    <link href="https://blackrockdigital.github.io/startbootstrap-creative/vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+    
+    <!--material icons-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/css/creative.css" rel="stylesheet">
+
+  </head>
+
+  <body id="page-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">PHOTOS</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <div class="nav-link" href="#">Logout</div>
+        </button>
+      </div>
+    </nav>
+
+
+    <header class="masthead text-center text-white d-flex">
+      <div class="container my-auto">
+        <div class="row">
+          <div class="col-lg-10 mx-auto">
+            <h1 class="text-uppercase" style="color:#f05f40;">
+              <strong>PHOTOS</strong>
+            </h1>
+            <hr>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <section class="p-0" id="portfolio">
+      <div class="container-fluid p-0">
+        <div class="row no-gutters popup-gallery" id='contents'>
+        </div>
+      </div>
+    </section>
+    
+    <div class="container-fluid">
+      <div class="row">
+          <div class="btn-group">
+            <div class="btn btn-success btn-fab center-block" id="main">
+                <i class="material-icons text-center" style='position: fixed; right: 23px; font-size: 50px;'>add</i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <style type="text/css">
+        .btn-group-sm .btn-fab{
+          position: fixed !important;
+          right: 29px;
+        }
+        .btn-group .btn-fab{
+          position: fixed !important;
+          right: 20px;
+        }
+        #main{
+          bottom: 20px;
+        }
+        .btn {
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+    
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/jquery/jquery.min.js"></script>
+    <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/scrollreveal/scrollreveal.min.js"></script>
+    <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="https://blackrockdigital.github.io/startbootstrap-creative/js/creative.min.js"></script>
+        <!-- Optional JavaScript -->
+        <script>
+          $(function() {
+              var url = '/api/v1/images/';
+              var token = localStorage.getItem('token');
+              var headerParams = {'Authorization':'Bearer ' + token};
+              console.log(headerParams);
+              $.ajax({
+                url: url,
+                type:'GET',
+                headers: headerParams,
+                dataType: 'json',
+                timeout: 3000,
+              }).done(function(response) {
+                for (var i=0; i<response.image_url.length; i++) {
+                    var content = '<div class="col-lg-4 col-sm-6">'
+                                + '<a class="portfolio-box" href="/media/' + response.image_url[i] + '">'
+                                + '<img class="img-fluid" src="/media/' + response.image_url[i] + '" alt="">'
+                                + '</a>'
+                                + '</div>';
+                    $('#contents').append(content);
+                }
+                if(response.image_url.length == 0) {
+                    var content = '<div class="col-lg-4 col-sm-6">'
+                                + '<a class="portfolio-box" href="/static/img/no_image.png">'
+                                + '<img class="img-fluid" src="/static/img/no_image.png" alt="">'
+                                + '</a>'
+                                + '</div>';
+                    $('#contents').append(content);
+                }
+              }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.responseText);
+              })
+            })
+        </script>
+  </body>
+
+</html>

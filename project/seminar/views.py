@@ -18,3 +18,6 @@ def register(request):
 
 def home(request):
     return render(request, 'seminar/home.html')
+
+def add(request):
+    return render(request, 'seminar/add.html')

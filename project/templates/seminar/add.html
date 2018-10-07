@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Material Design for Bootstrap fonts and icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+    
+        <!-- Material Design for Bootstrap CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+        
+        <title>PHOTOS</title>
+    </head>
+    <body class="text-center">
+        <div class='container'>
+          <div class='row center-block'>
+            <form class="form-signin col-10 offset-1 row" id='my_form' name='my_form'>
+              <div class='col-12'>
+                <div style='height:150px;'><!-- 高さ調整 --></div>
+                <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
+                <label class="control-label text-left col-12" style="padding: 0;">クリックして画像を選択</label>
+                <input type="file" class="form-control" id='files' multiple="multiple" accept="image/*" required>
+                <label class="control-label text-left col-12" style="padding: 0;">フィルター</label>
+                <select class="form-control" id="filter" name='image_filter'>
+                    <option value="none">None</option>
+                    <option value="anime">Anime</option>
+                    <option value="canny">Canny</option>
+                    <option value="gray">Gray</option>
+                    <option value="laplacian">Laplacian</option>
+                    <option value="sobel">Sobel</option>
+                </select>
+    
+                <button id='add_button' class="btn btn-lg btn-primary btn-block" type="button">追加</button>
+              </div>
+              <a href="home" class='col-12 text-muted'>戻る</a>
+            </form>
+          </div>
+        </div>
+        <!--ローディング画面-->
+        <div id="loader-bg">
+          <div id="loader">
+            <div class="spinner">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+        <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+        
+        <!--custom css-->
+        <style type="text/css">
+          input {
+            margin-bottom: 30px;
+            height: 44px;
+          }
+          select {
+            margin-bottom: 30px;
+            height: 44px;
+          }
+          /*ローディング画面*/
+            #loader-bg {
+              display: none;
+              position: fixed;
+              width: 100%;
+              height: 100%;
+              top: 0px;
+              left: 0px;
+              background: #fff;
+              z-index: 1;
+            }
+            #loader {
+              display: none;
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              width: 200px;
+              height: 200px;
+              margin-top: -100px;
+              margin-left: -100px;
+              text-align: center;
+              color: #000;
+              z-index: 2;
+            }
+            /*アニメーション*/
+            .spinner {
+              margin: 100px auto 0;
+              width: 70px;
+              text-align: center;
+            }
+            
+            .spinner > div {
+              width: 18px;
+              height: 18px;
+              background-color: #333;
+            
+              border-radius: 100%;
+              display: inline-block;
+              -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+              animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+            }
+            
+            .spinner .bounce1 {
+              -webkit-animation-delay: -0.32s;
+              animation-delay: -0.32s;
+            }
+            
+            .spinner .bounce2 {
+              -webkit-animation-delay: -0.16s;
+              animation-delay: -0.16s;
+            }
+            
+            @-webkit-keyframes sk-bouncedelay {
+              0%, 80%, 100% { -webkit-transform: scale(0) }
+              40% { -webkit-transform: scale(1.0) }
+            }
+            
+            @keyframes sk-bouncedelay {
+              0%, 80%, 100% { 
+                -webkit-transform: scale(0);
+                transform: scale(0);
+              } 40% { 
+                -webkit-transform: scale(1.0);
+                transform: scale(1.0);
+              }
+            }
+        </style>
+        
+        <!-- Optional JavaScript -->
+        <script>
+            $(function() {
+                var url = '/api/v1/images/';
+                var token = localStorage.getItem('token');
+                var headerParams = {'Authorization':'Bearer ' + token};
+                
+                $('#add_button').on('click', function(event) {
+                    // ローディング画面表示
+                      var h = $(window).height();
+                      $('#wrap').css('display','none');
+                      $('#loader-bg ,#loader').height(h).css('display','block');
+                      
+                    // 通信開始
+                    var form_data = new FormData();
+                	var files = $('#files')[0].files;
+                	$.each(files, function(i, file){
+                		form_data.append('file[]', file);
+                	});
+                	var filter = $('#filter').val()
+                	form_data.append('image_filter', filter);
+                    
+                    // Ajaxで送信
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        dataType: 'json',
+                        headers: headerParams,
+                        data: form_data,
+                        processData: false,
+                        contentType: false
+                    }).done(function(response) {
+                        setTimeout(function(){
+                            location.href = "home";
+                        },2000);
+                    }).fail(function(xhr, status, error) {
+                        setTimeout(function(){
+                            location.href = "home";
+                        },2000);
+                    })
+                })
+            })
+        </script>
+    </body>
+</html>

@@ -10,12 +10,12 @@
         <!-- Material Design for Bootstrap CSS -->
         <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
         
-        <title>タイトル</title>
+        <title>PHOTOS</title>
     </head>
     <body class="text-center">
         <div class='container'>
           <div class='row'>
-            <div class="form-signin col-12 row center-block" method='post' action=''>
+            <div class="form-signin col-10 offset-1 row center-block" method='post' action=''>
               <div class='col-12'>
                 <div style='height:150px;'><!-- 高さ調整 --></div>
                 <h1 class="h3 mb-3 font-weight-normal">画像編集サイト</h1>
@@ -23,7 +23,7 @@
                 <input type="text" id="account_field" class="form-control" placeholder="アカウント名" required autofocus>
                 <input type="password" id="password_field" class="form-control" placeholder="パスワード" required>
     
-                <button id="register_button" class="btn btn-lg btn-primary btn-block" type="submit">登録</button>
+                <button id="register_button" class="btn btn-lg btn-primary btn-block" type="button">登録</button>
               </div>
               <a href="login" class='col-12 text-muted'>アカウントを持っている</a>
             </form>
@@ -36,6 +36,13 @@
         <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
         <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+        <!--custom css-->
+        <style type="text/css">
+          input {
+            margin-bottom: 30px;
+            height: 44px;
+          }
+        </style>
         
         <!-- Optional JavaScript -->
         <script>

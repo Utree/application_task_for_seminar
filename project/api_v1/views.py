@@ -109,17 +109,22 @@ def login(request):
 # 画像API
 @csrf_exempt
 def images(request):
-    # トークンの認証
-    if request.META['HTTP_AUTHORIZATION']:
-        # Bearerスキームを取り除いて、tokenを認証し、userオブジェクトを得る
-        user = TokenSerializer.auth(request.META['HTTP_AUTHORIZATION'].replace("Bearer ", ""))
-        # トークンに紐付けられたアカウントが無かった場合
-        if not user:
-            response = HttpResponse("token is wrong", status=401)
-            response["WWW-Authenticate"] = 'realm="The access token was expired", error="invalid_token"'
+    try:
+        # トークンの認証
+        if request.META['HTTP_AUTHORIZATION']:
+            # Bearerスキームを取り除いて、tokenを認証し、userオブジェクトを得る
+            user = TokenSerializer.auth(request.META['HTTP_AUTHORIZATION'].replace("Bearer ", ""))
+            # トークンに紐付けられたアカウントが無かった場合
+            if not user:
+                response = HttpResponse("token is wrong", status=401)
+                response["WWW-Authenticate"] = 'realm="The access token was expired", error="invalid_token"'
+                return response
+        # トークンが空の場合
+        else:
+            response = HttpResponse("token is empty", status=401)
+            response["WWW-Authenticate"] = 'realm="token is empty", error="invalid_token"'
             return response
-    # トークンが空の場合
-    else:
+    except:
         response = HttpResponse("token is empty", status=401)
         response["WWW-Authenticate"] = 'realm="token is empty", error="invalid_token"'
         return response
@@ -136,6 +141,7 @@ def images(request):
         # ファイルのリストをとる
         try:
             files = request.FILES.getlist('file[]')
+            print(files)
         except Exception as e:
             print(e)
             return HttpResponse("file is empty", status=400)
@@ -157,29 +163,29 @@ def images(request):
                     ff.write(files[i].file.read())
                     
                 
-                # # ヘッダを確認
-                # try:
-                #     # imageFilterを掛ける (別スレッドで実行)
-                #     if str(request.POST['image_filter']) == 'anime':
-                #         t = threading.Thread(target=Anime, args=(file_name,))
-                #         t.start()
-                #     elif str(request.POST['image_filter']) == 'canny':
-                #         t = threading.Thread(target=Canny, args=(file_name,))
-                #         t.start()
-                #     elif str(request.POST['image_filter']) == 'gray':
-                #         t = threading.Thread(target=Gray, args=(file_name,))
-                #         t.start()
-                #     elif str(request.POST['image_filter']) == 'laplacian':
-                #         t = threading.Thread(target=Laplacian, args=(file_name,))
-                #         t.start()
-                #     elif str(request.POST['image_filter']) == 'sobel':
-                #         t = threading.Thread(target=Sobel, args=(file_name,))
-                #         t.start()
-                #     else:
-                #         pass
-                # # ヘッダが無かった場合
-                # except:
-                #     pass
+                # ヘッダを確認
+                try:
+                    # imageFilterを掛ける (別スレッドで実行)
+                    if str(request.POST['image_filter']) == 'anime':
+                        t = threading.Thread(target=Anime, args=(file_name,))
+                        t.start()
+                    elif str(request.POST['image_filter']) == 'canny':
+                        t = threading.Thread(target=Canny, args=(file_name,))
+                        t.start()
+                    elif str(request.POST['image_filter']) == 'gray':
+                        t = threading.Thread(target=Gray, args=(file_name,))
+                        t.start()
+                    elif str(request.POST['image_filter']) == 'laplacian':
+                        t = threading.Thread(target=Laplacian, args=(file_name,))
+                        t.start()
+                    elif str(request.POST['image_filter']) == 'sobel':
+                        t = threading.Thread(target=Sobel, args=(file_name,))
+                        t.start()
+                    else:
+                        pass
+                # ヘッダが無かった場合
+                except:
+                    pass
         
                 # データベースに保存
                 ImageSerializer.create(file_path=file_name, user_info=user)

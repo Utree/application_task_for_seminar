@@ -4,10 +4,8 @@
 ## 概要
 画像編集サイト
 
-### 構想　ドキュメント
-https://paper.dropbox.com/doc/--AN3gfwhLeAgvbBqGDL2Aw~5zAQ-vBWRDhzRQswBdOwxrbKtQ
-
 ### 全体のアーキテクチャ
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_F5BD2AC707D626C6F3286771CE0C236A048149558DDB7F75DEFC080E81A03A17_1538976095106_+2018-10-08+14.20.54.png)
 
 ### APIドキュメント
 https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
@@ -31,6 +29,7 @@ https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
     - pycparser==2.19
     - pytz==2018.5
     - six==1.11.0
+    - django-progressive-web-app==0.1.1
 
 ## サイト
 - https://application-task-for-seminar-yuukic9.c9users.io/

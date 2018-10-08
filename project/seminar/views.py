@@ -21,3 +21,6 @@ def home(request):
 
 def add(request):
     return render(request, 'seminar/add.html')
+
+def manifest(request):
+    return render(request, 'seminar/manifest.json')

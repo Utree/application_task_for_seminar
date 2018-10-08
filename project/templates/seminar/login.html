@@ -1,72 +1,61 @@
-<!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "seminar/form_view_template.html" %}
+
+{% block body %}
+<div class='container'>
+  <div class='center-block'>
+    <form class="form-signin col-10 offset-1 row">
+      <div class='col-12'>
+        <!-- 高さ調整 -->
+        <div style='height:150px;'></div>
         
-        <!-- Material Design for Bootstrap fonts and icons -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
-    
-        <!-- Material Design for Bootstrap CSS -->
-        <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+        <!--タイトル-->
+        <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
         
-        <title>PHOTOS</title>
-    </head>
-    <body class="text-center">
-        <div class='container'>
-          <div class='row center-block'>
-            <div class="form-signin col-10 offset-1 row">
-              <div class='col-12'>
-                <div style='height:150px;'><!-- 高さ調整 --></div>
-                <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
-                <br>
-                <input type="text" id="account_field" class="form-control" placeholder="アカウント名" required autofocus>
-                <input type="password" id="password_field" class="form-control" placeholder="パスワード" required>
-    
-                <button id='login_button' class="btn btn-lg btn-primary btn-block" type="button">ログイン</button>
-              </div>
-              <a href="register" class='col-12 text-muted'>アカウントをつくる</a>
-            </div>
-          </div>
-        </div>
+        <!--フォームアイテム-->
+        <input type="text" id="account_field" class="form-control" placeholder="アカウント名" required autofocus>
+        <input type="password" id="password_field" class="form-control" placeholder="パスワード" required autocomplete>
+
+        <!--ボタン-->
+        <button id='login_button' class="btn btn-lg btn-primary btn-block" type="button">ログイン</button>
+      </div>
+      
+      <!--登録ページに移動-->
+      <a href="register" class='col-12 text-muted'>アカウントをつくる</a>
+    </form>
+  </div>
+</div>
+
+<!--オフライン用画面-->
+<div id='offline-bg'>
+    <div id='offline'>
+        STATUS: OFFLINE
+    </div>
+</div>
+{% endblock %}
         
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
-        <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+<!-- Optional JavaScript -->
+{% block optional_js %}
+<script>
+  $('#login_button').click(
+    function() {
+      var url = '/api/v1/login/';
+      var account_name = $('#account_field').val();
+      var password = $('#password_field').val();
+      $.ajax({
+        url: url,
+        type:'POST',
+        dataType: 'json',
+        data: '{"account_name": "' + account_name + '", "password": "' + "password" + '"}',
+        timeout: 3000,
+      }).done(function(response) {
+        // localStorageに保存
+        localStorage.setItem('token', response.token);
         
-        <!--custom css-->
-        <style type="text/css">
-          input {
-            margin-bottom: 30px;
-            height: 44px;
-          }
-        </style>
-        
-        <!-- Optional JavaScript -->
-        <script>
-          $('#login_button').click(
-            function() {
-              var url = '/api/v1/login/';
-              var account_name = $('#account_field').val();
-              var password = $('#password_field').val();
-              $.ajax({
-                url: url,
-                type:'POST',
-                dataType: 'json',
-                data: '{"account_name": "' + account_name + '", "password": "' + "password" + '"}',
-                timeout: 3000,
-              }).done(function(response) {
-                // localStorageに保存
-                localStorage.setItem('token', response.token);
-                
-                // 画面遷移
-                window.location.href = '/home';
-              }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
-                alert(XMLHttpRequest.responseText);
-              })
-            })
-        </script>
-    </body>
-</html>
+        // 画面遷移
+        window.location.href = '/home';
+      }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(XMLHttpRequest.responseText);
+      })
+    })
+</script>
+{% endblock %}

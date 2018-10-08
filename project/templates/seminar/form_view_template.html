@@ -1,0 +1,67 @@
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Material Design for Bootstrap fonts and icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+    
+        <!-- Material Design for Bootstrap CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+        
+        <!--modify form items-->
+        <link rel="stylesheet" href="/static/seminar/css/modify_form_items.css">
+        
+        <!--loading animation-->
+        <link rel="stylesheet" href="/static/seminar/css/loading_animation.css">
+        
+        <!--offline style-->
+        <link rel="stylesheet" href="/static/seminar/css/offline_style.css">
+        
+        <title>PHOTOS</title>
+        <!-- manifest -->
+        <link rel="manifest" href="/manifest.json">
+		<!-- ios用のアイコン設定 -->
+		<link rel="apple-touch-icon" href="/static/seminar/img/icon.png"/>
+		<!-- favicon設定 -->
+		<link rel="shortcut icon" href="/static/seminar/img/icon.png">
+		<!-- ステータスバーの色 -->
+		<meta name="apple-mobile-web-app-status-bar-style" content="white">
+		{% progressive_web_app_meta %}
+    </head>
+    
+    <body class="text-center">
+        {% block body %}
+        {% endblock %}
+        
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+        
+        <!--offline style-->
+        <script src="/static/seminar/js/offline_style.js"></script>
+        
+        <!-- Optional JavaScript -->
+        {% block optional_js %}
+        {% endblock %}
+        
+        <!--PWA-->
+		<script>
+		// ServiceWorker登録：https://developers.google.com/web/fundamentals/primers/service-workers/?hl=ja
+		// jsのnavigatorオブジェクトから"serviceWorker"が存在するか確認する
+		if ('serviceWorker' in navigator) {
+			// ページからService Workerを登録する
+			navigator.serviceWorker.register('/static/seminar/js/sw.js').then(function(registration) {
+				// 登録成功
+				console.log('サービスワーカーの登録成功');
+			}).catch(function(err) {
+				// 登録失敗
+				console.log('サービスワーカーの登録失敗: ', err);
+			});
+		}
+		</script>
+    </body>
+</html>

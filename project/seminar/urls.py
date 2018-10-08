@@ -8,4 +8,5 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path('home', views.home, name='home'),
     path('add', views.add, name='add'),
+    path('manifest.json', views.manifest, name='manifest'),
 ]

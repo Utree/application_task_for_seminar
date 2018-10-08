@@ -1,0 +1,9 @@
+/*見た目の調整用*/
+input {
+    margin-bottom: 30px;
+    height: 44px;
+}
+select {
+    margin-bottom: 30px;
+    height: 44px;
+}

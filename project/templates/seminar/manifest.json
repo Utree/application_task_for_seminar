@@ -1,0 +1,13 @@
+{
+	"short_name": "PHOTOS",
+	"name": "PHOTOS",
+	"display": "standalone",
+	"start_url": "/login",
+	"icons": [
+		{
+			"src": "/static/seminar/img/icon.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		}
+	]
+}

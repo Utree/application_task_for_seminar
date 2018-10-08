@@ -1,3 +1,4 @@
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -24,13 +25,26 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="static/css/creative.css" rel="stylesheet">
-
+    <link href="/static/seminar/css/home_style.css" rel="stylesheet">
+    
+    <!--offline style-->
+    <link rel="stylesheet" href="/static/seminar/css/offline_style.css">
+    
+	<!-- manifest -->
+	<link rel="manifest" href="/manifest.json">
+        
+	<!-- ios用のアイコン設定 -->
+	<link rel="apple-touch-icon" href="/static/seminar/img/icon.png"/>
+	<!-- favicon設定 -->
+	<link rel="shortcut icon" href="/static/seminar/img/icon.png">
+	<!-- ステータスバーの色 -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="white">
+	{% progressive_web_app_meta %}
   </head>
 
   <body id="page-top">
 
-    <!-- Navigation -->
+    <!-- Navigation bar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
       <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="#page-top">PHOTOS</a>
@@ -40,7 +54,7 @@
       </div>
     </nav>
 
-
+    <!--header title-->
     <header class="masthead text-center text-white d-flex">
       <div class="container my-auto">
         <div class="row">
@@ -54,6 +68,7 @@
       </div>
     </header>
     
+    <!--contents-->
     <section class="p-0" id="portfolio">
       <div class="container-fluid p-0">
         <div class="row no-gutters popup-gallery" id='contents'>
@@ -61,6 +76,7 @@
       </div>
     </section>
     
+    <!--floating button-->
     <div class="container-fluid">
       <div class="row">
           <div class="btn-group">
@@ -72,21 +88,12 @@
       </div>
     </div>
     
-    <style type="text/css">
-        .btn-group-sm .btn-fab{
-          position: fixed !important;
-          right: 29px;
-        }
-        .btn-group .btn-fab{
-          position: fixed !important;
-          right: 20px;
-        }
-        .floating-btn {
-            bottom: 20px;
-            width: 60px;
-            height: 60px;
-        }
-    </style>
+    <!--オフライン用画面-->
+    <div id='offline-bg'>
+        <div id='offline'>
+            STATUS: OFFLINE
+        </div>
+    </div>
     
     <!-- Bootstrap core JavaScript -->
     <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/jquery/jquery.min.js"></script>
@@ -96,51 +103,31 @@
     <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/scrollreveal/scrollreveal.min.js"></script>
     <script src="https://blackrockdigital.github.io/startbootstrap-creative/vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
-
-    <!-- Custom scripts for this template -->
+    
+    <!--画像をクリックした時の挙動-->
     <script src="https://blackrockdigital.github.io/startbootstrap-creative/js/creative.min.js"></script>
-        <!-- Optional JavaScript -->
-        <script>
-          $(function() {
-              var url = '/api/v1/images/';
-              var token = localStorage.getItem('token');
-              var headerParams = {'Authorization':'Bearer ' + token};
-              console.log(headerParams);
-              $.ajax({
-                url: url,
-                type:'GET',
-                headers: headerParams,
-                dataType: 'json',
-                timeout: 3000,
-              }).done(function(response) {
-                 // コンテンツを表示
-                for (var i=0; i<response.image_url.length; i++) {
-                    var content = '<div class="col-lg-4 col-sm-6">'
-                                + '<a class="portfolio-box" href="/media/' + response.image_url[i] + '">'
-                                + '<img class="img-fluid" src="/media/' + response.image_url[i] + '" alt="">'
-                                + '</a>'
-                                + '</div>';
-                    $('#contents').append(content);
-                }
-                // コンテンツ数が0の場合はno_image.pngを表示
-                if(response.image_url.length == 0) {
-                    var content = '<div class="col-lg-4 col-sm-6">'
-                                + '<a class="portfolio-box" href="/static/img/no_image.png">'
-                                + '<img class="img-fluid" src="/static/img/no_image.png" alt="">'
-                                + '</a>'
-                                + '</div>';
-                    $('#contents').append(content);
-                }
-              }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
-                // トークンが間違っている場合、強制的にLoginページに飛ばす
-                location.href = "login";
-              })
-                $('#logout').click(function(){
-                     localStorage.clear();
-                     location.href = "login";
-                });
-            })
-        </script>
+    
+    <!-- Optional JavaScript -->
+    <script src="/static/seminar/js/home_style.js"></script>
+    
+    <!--offline style-->
+    <script src="/static/seminar/js/offline_style.js"></script>
+    
+    <!--PWA-->
+	<script>
+	// ServiceWorker登録：https://developers.google.com/web/fundamentals/primers/service-workers/?hl=ja
+	// jsのnavigatorオブジェクトから"serviceWorker"が存在するか確認する
+	if ('serviceWorker' in navigator) {
+		// ページからService Workerを登録する
+		navigator.serviceWorker.register('/static/seminar/js/sw.js').then(function(registration) {
+			// 登録成功
+			console.log('サービスワーカーの登録成功');
+		}).catch(function(err) {
+			// 登録失敗
+			console.log('サービスワーカーの登録失敗: ', err);
+		});
+	}
+	</script>
   </body>
 
 </html>

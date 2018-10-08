@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-# from django.urls import path
+from django.urls import path
 from django.conf.urls import include, url
 # uploaded_files下を公開するための設定
 from django.conf import settings
@@ -36,4 +36,7 @@ urlpatterns = [
     
     # 管理画面
     # path('admin/', admin.site.urls),
+    
+    # PWA
+    path('', include('pwa.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # uploaded_file下を見えるようにする

@@ -1,4 +1,4 @@
-pipargon2-cffi==18.3.0
+argon2-cffi==18.3.0
 cffi==1.11.5
 Django==2.1.2
 django-filter==2.0.0

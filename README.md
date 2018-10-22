@@ -32,4 +32,4 @@ https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
     - django-progressive-web-app==0.1.1
 
 ## サイト
-- https://application-task-for-seminar-yuukic9.c9users.io/
+- https://pure-shore-31694.herokuapp.com/

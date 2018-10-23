@@ -31,5 +31,3 @@ https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
     - six==1.11.0
     - django-progressive-web-app==0.1.1
 
-## サイト
-- https://pure-shore-31694.herokuapp.com/

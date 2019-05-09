@@ -40,15 +40,15 @@ def register(request):
         data = JSONParser().parse(request)
         # Userモデルに当てはめる
         serializer = UserSerializer(data=data)
-        
+
         # バリデーションを掛ける(パスワードはハッシュ化するので、空文字判定を先に行う)
        # パスワードが空かを確認する
         if serializer.initial_data["password"] == "":
             return HttpResponse("使用できないパスワードです。", status=403)
-        
+
         # パスワードをハッシュ化
         serializer.initial_data["password"] = make_password(serializer.initial_data["password"], hasher='argon2')
-        
+
         # 有効なものかを判断する
         if serializer.is_valid():
             # 保存
@@ -88,7 +88,7 @@ def login(request):
                 user = UserSerializer.select(user_name=serializer.initial_data["account_name"])
             except:
                 return HttpResponse("ユーザーが存在しません", status=401)
-            
+
             # ログイン成功時
             if check_password(serializer.data["password"], user.password):
                 # トークン生成
@@ -105,7 +105,7 @@ def login(request):
         return HttpResponse("不正なリクエスト", status=400)
     else:
         return HttpResponse("不正なリクエスト", status=400)
-            
+
 # 画像API
 @csrf_exempt
 def images(request):
@@ -128,7 +128,9 @@ def images(request):
         response = HttpResponse("token is empty", status=401)
         response["WWW-Authenticate"] = 'realm="token is empty", error="invalid_token"'
         return response
-    
+
+    print(BASE_DIR)
+
     # GETメソッド
     if request.method == 'GET':
         # レスポンスをつくる
@@ -161,8 +163,8 @@ def images(request):
                 # ファイルを保存
                 with open(path1, 'wb') as ff:
                     ff.write(files[i].file.read())
-                    
-                
+
+
                 # ヘッダを確認
                 try:
                     # imageFilterを掛ける (別スレッドで実行)
@@ -186,15 +188,15 @@ def images(request):
                 # ヘッダが無かった場合
                 except:
                     pass
-        
+
                 # データベースに保存
                 ImageSerializer.create(file_path=file_name, user_info=user)
             # 画像ファイル以外の拡張子が来た時
             else:
                 return HttpResponse("jpeg, jpg, pngのみ対応しています。", status=406)
-    
+
         return HttpResponse("Success")
-            
+
     # その他
     else:
         return HttpResponse("不正なリクエスト", status=400)

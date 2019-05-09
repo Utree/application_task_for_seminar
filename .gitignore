@@ -1,1 +1,10 @@
 /penv
+/project/uploaded_files/api_v1/images/*
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media

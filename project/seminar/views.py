@@ -9,7 +9,7 @@ UPLOADE_DIR = os.path.join(BASE_DIR, 'static/seminar/uploaded')
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
-    
+
 def login(request):
     return render(request, 'seminar/login.html')
 
@@ -21,6 +21,9 @@ def home(request):
 
 def add(request):
     return render(request, 'seminar/add.html')
+
+def style_transfer(request):
+    return render(request, 'seminar/style_transfer.html')
 
 def manifest(request):
     return render(request, 'seminar/manifest.json')

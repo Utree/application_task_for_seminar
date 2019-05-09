@@ -1,0 +1,97 @@
+{% extends "seminar/form_view_template.html" %}
+
+{% block body %}
+    <div class='container'>
+      <div class='row center-block'>
+        <form class="form-signin col-10 offset-1 row" id='my_form' name='my_form'>
+          <div class='col-12'>
+            <!-- 高さ調整 -->
+            <div style='height:150px;'></div>
+
+            <!--タイトル-->
+            <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
+
+            <!--ファイル選択-->
+            <label class="control-label text-left col-12" style="padding: 0;">元画像を選択</label>
+            <input type="file" class="form-control" id='original_image' multiple="multiple" accept="image/*" required>
+
+            <!--ファイル選択-->
+            <label class="control-label text-left col-12" style="padding: 0;">スタイル画像を選択</label>
+            <input type="file" class="form-control" id='style_image' multiple="multiple" accept="image/*" required>
+
+            <!--ボタン-->
+            <button id='add_button' class="btn btn-lg btn-primary btn-block" type="button">変換</button>
+          </div>
+
+          <!--戻るボタン-->
+          <a href="home" class='col-12 text-muted'>戻る</a>
+        </form>
+      </div>
+    </div>
+
+    <!--ローディング画面-->
+    <div id="loader-bg">
+      <div id="loader">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!--オフライン用画面-->
+    <div id='offline-bg'>
+        <div id='offline'>
+            STATUS: OFFLINE
+        </div>
+    </div>
+{% endblock %}
+
+<!-- Optional JavaScript -->
+{% block optional_js %}
+<script>
+    $(function() {
+        var url = '/api/v2/images/';
+        var token = localStorage.getItem('token');
+        var headerParams = {'Authorization':'Bearer ' + token};
+
+        $('#add_button').on('click', function(event) {
+            // 高さを取得
+            var h = $(window).height();
+            // ローディング画面表示
+            $('#loader-bg ,#loader').height(h).css('display','block');
+
+            // 通信開始
+            // フォームデータ
+            var form_data = new FormData();
+
+            // 元画像
+            var original_image = $('#original_image').val()
+          	form_data.append('original_image', original_image);
+            // スタイル画像
+            var style_image = $('#style_image').val()
+          	form_data.append('style_image', style_image);
+
+            // Ajaxで送信
+            $.ajax({
+                url: url,
+                method: 'POST',
+                dataType: 'json',
+                headers: headerParams,
+                data: form_data,
+                processData: false,
+                contentType: false
+            }).done(function(response) {
+                setTimeout(function(){
+                    location.href = "home";
+                },2000);
+            }).fail(function(xhr, status, error) {
+                setTimeout(function(){
+                    location.href = "home";
+                },2000);
+            })
+        })
+    })
+</script>
+{% endblock %}

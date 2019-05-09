@@ -23,20 +23,22 @@ from django.conf.urls.static import static
 # # api viewer(debug用)
 # from api_v1.urls import router as api_v1_router
 from api_v1 import views
+from api_v2 import views
 
 urlpatterns = [
     # ルートをseminarアプリに任せる
     url('^', include('seminar.urls')),
-    
+
     # apiアプリ
     url(r'^api/v1/', include('api_v1.urls')),
-    
+    url(r'^api/v2/', include('api_v2.urls')),
+
     # # api viewer(debug用)
     # url(r'^api/', include(api_v1_router.urls)),
-    
+
     # 管理画面
     # path('admin/', admin.site.urls),
-    
+
     # PWA
     path('', include('pwa.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # uploaded_file下を見えるようにする

@@ -129,8 +129,6 @@ def images(request):
         response["WWW-Authenticate"] = 'realm="token is empty", error="invalid_token"'
         return response
 
-    print(BASE_DIR)
-
     # GETメソッド
     if request.method == 'GET':
         # レスポンスをつくる

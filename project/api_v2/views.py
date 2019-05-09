@@ -20,6 +20,14 @@ import os
 # 別スレッドで処理する用
 import threading
 
+from api_v2.model.style_transfer import style_transfer
+
+import re
+
+# ファイルの保存先のパス
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOADE_DIR = os.path.join(BASE_DIR, 'uploaded_files/api_v1/images')
+
 # Create your views here.
 # 画像API
 @csrf_exempt
@@ -44,76 +52,58 @@ def images(request):
         response["WWW-Authenticate"] = 'realm="token is empty", error="invalid_token"'
         return response
 
-    print("authorization succeed")
+    # GETメソッド
+    if request.method == 'GET':
+        # レスポンスをつくる
+        response = HttpResponse(ImageSerializer.select(user.id), status=200)
+        response['content-type'] = 'application/json; charset=utf-8'
+        return response
+    # POSTメソッド
+    elif request.method == 'POST':
+        try:
+            # print(re.search(r"C\:\\fakepath\\(?P<name>.*.)", str(request.POST['original_image']).group(2)))
+            files = [request.FILES['original_image'], request.FILES['style_image']]
+            print(files)
+        except Exception as e:
+            return HttpResponse("file is empty", status=400)
+        # ファイル保存
+        for i in range(len(files)):
+            # ファイル名と拡張子を別にする
+            name, ext = os.path.splitext(str(files[i]))
+            # バリデーションを掛ける
+            if (ext == '.jpeg') or (ext == '.png') or (ext == '.jpg'):
+                # ファイルネームのハッシュ化(URLに使えない文字を消す為)
+                name = hashlib.sha1(name.encode('utf-8')).hexdigest()[:10]
+                # タイムスタンプを付けて、ファイルのリネーム
+                dt = timezone.now()
+                file_name = name + dt.strftime('%Y%m%d%H%M%S%f') + ext
+                # パスの指定
+                path1 = os.path.join(UPLOADE_DIR, file_name)
+                # ファイルを保存
+                with open(path1, 'wb') as ff:
+                    ff.write(files[i].file.read())
 
-    return HttpResponse("authorization succeed")
+                # ファイル名を更新
+                files[i] = file_name
+            # 画像ファイル以外の拡張子が来た時
+            else:
+                return HttpResponse("jpeg, jpg, pngのみ対応しています。", status=406)
 
-    # # GETメソッド
-    # if request.method == 'GET':
-    #     # レスポンスをつくる
-    #     response = HttpResponse(ImageSerializer.select(user.id), status=200)
-    #     response['content-type'] = 'application/json; charset=utf-8'
-    #     return response
-    # # POSTメソッド
-    # elif request.method == 'POST':
-    #     # ファイルアップロード（複数）
-    #     # ファイルのリストをとる
-    #     try:
-    #         files = request.FILES.getlist('file[]')
-    #         print(files)
-    #     except Exception as e:
-    #         print(e)
-    #         return HttpResponse("file is empty", status=400)
-    #     # 一つづつファイル操作
-    #     for i in range(len(files)):
-    #         # ファイル名と拡張子を別にする
-    #         name, ext = os.path.splitext(str(files[i]))
-    #         # バリデーションを掛ける
-    #         if (ext == '.jpeg') or (ext == '.png') or (ext == '.jpg'):
-    #             # ファイルネームのハッシュ化(URLに使えない文字を消す為)
-    #             name = hashlib.sha1(name.encode('utf-8')).hexdigest()[:10]
-    #             # タイムスタンプを付けて、ファイルのリネーム
-    #             dt = timezone.now()
-    #             file_name = name + dt.strftime('%Y%m%d%H%M%S%f') + ext
-    #             # パスの指定
-    #             path1 = os.path.join(UPLOADE_DIR, file_name)
-    #             # ファイルを保存
-    #             with open(path1, 'wb') as ff:
-    #                 ff.write(files[i].file.read())
-    #
-    #
-    #             # ヘッダを確認
-    #             try:
-    #                 # imageFilterを掛ける (別スレッドで実行)
-    #                 if str(request.POST['image_filter']) == 'anime':
-    #                     t = threading.Thread(target=Anime, args=(file_name,))
-    #                     t.start()
-    #                 elif str(request.POST['image_filter']) == 'canny':
-    #                     t = threading.Thread(target=Canny, args=(file_name,))
-    #                     t.start()
-    #                 elif str(request.POST['image_filter']) == 'gray':
-    #                     t = threading.Thread(target=Gray, args=(file_name,))
-    #                     t.start()
-    #                 elif str(request.POST['image_filter']) == 'laplacian':
-    #                     t = threading.Thread(target=Laplacian, args=(file_name,))
-    #                     t.start()
-    #                 elif str(request.POST['image_filter']) == 'sobel':
-    #                     t = threading.Thread(target=Sobel, args=(file_name,))
-    #                     t.start()
-    #                 else:
-    #                     pass
-    #             # ヘッダが無かった場合
-    #             except:
-    #                 pass
-    #
-    #             # データベースに保存
-    #             ImageSerializer.create(file_path=file_name, user_info=user)
-    #         # 画像ファイル以外の拡張子が来た時
-    #         else:
-    #             return HttpResponse("jpeg, jpg, pngのみ対応しています。", status=406)
-    #
-    #     return HttpResponse("Success")
-    #
-    # # その他
-    # else:
-    #     return HttpResponse("不正なリクエスト", status=400)
+        # ファイルネームのハッシュ化(URLに使えない文字を消す為)
+        name = hashlib.sha1((str(files[0])+str(files[1])).encode('utf-8')).hexdigest()[:10]
+        # タイムスタンプを付けて、ファイルのリネーム
+        dt = timezone.now()
+        file_name = name + dt.strftime('%Y%m%d%H%M%S%f') + ext
+
+        # 画像処理
+        t = threading.Thread(target=style_transfer, args=(files[0], files[1], file_name,))
+        t.start()
+
+        # データベースに保存
+        ImageSerializer.create(file_path=file_name, user_info=user)
+
+        return HttpResponse("Success")
+
+    # その他
+    else:
+        return HttpResponse("不正なリクエスト", status=400)

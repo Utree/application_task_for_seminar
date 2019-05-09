@@ -9,15 +9,15 @@
             <div style='height:150px;'></div>
 
             <!--タイトル-->
-            <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
+            <h1 class="h3 mb-3 font-weight-normal">PHOTOS 2</h1>
 
             <!--ファイル選択-->
             <label class="control-label text-left col-12" style="padding: 0;">元画像を選択</label>
-            <input type="file" class="form-control" id='original_image' multiple="multiple" accept="image/*" required>
+            <input type="file" class="form-control" id='original_image' accept="image/*" required>
 
             <!--ファイル選択-->
             <label class="control-label text-left col-12" style="padding: 0;">スタイル画像を選択</label>
-            <input type="file" class="form-control" id='style_image' multiple="multiple" accept="image/*" required>
+            <input type="file" class="form-control" id='style_image' accept="image/*" required>
 
             <!--ボタン-->
             <button id='add_button' class="btn btn-lg btn-primary btn-block" type="button">変換</button>
@@ -67,11 +67,15 @@
             var form_data = new FormData();
 
             // 元画像
-            var original_image = $('#original_image').val()
-          	form_data.append('original_image', original_image);
+            var original_image = $('#original_image')[0].files;
+            $.each(original_image, function(i, file){
+              form_data.append('original_image', file);
+            });
             // スタイル画像
-            var style_image = $('#style_image').val()
-          	form_data.append('style_image', style_image);
+            var style_image = $('#style_image')[0].files;
+            $.each(style_image, function(i, file){
+              form_data.append('style_image', file);
+            });
 
             // Ajaxで送信
             $.ajax({

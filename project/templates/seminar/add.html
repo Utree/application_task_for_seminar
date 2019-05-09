@@ -7,14 +7,14 @@
           <div class='col-12'>
             <!-- 高さ調整 -->
             <div style='height:150px;'></div>
-            
+
             <!--タイトル-->
-            <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
-            
+            <h1 class="h3 mb-3 font-weight-normal">PHOTOS 2</h1>
+
             <!--ファイル選択-->
             <label class="control-label text-left col-12" style="padding: 0;">クリックして画像を選択</label>
             <input type="file" class="form-control" id='files' multiple="multiple" accept="image/*" required>
-            
+
             <!--フィルタ-->
             <label class="control-label text-left col-12" style="padding: 0;">フィルター</label>
             <select class="form-control" id="filter" name='image_filter'>
@@ -29,13 +29,13 @@
             <!--ボタン-->
             <button id='add_button' class="btn btn-lg btn-primary btn-block" type="button">追加</button>
           </div>
-          
+
           <!--戻るボタン-->
           <a href="home" class='col-12 text-muted'>戻る</a>
         </form>
       </div>
     </div>
-    
+
     <!--ローディング画面-->
     <div id="loader-bg">
       <div id="loader">
@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-    
+
     <!--オフライン用画面-->
     <div id='offline-bg'>
         <div id='offline'>
@@ -54,7 +54,7 @@
         </div>
     </div>
 {% endblock %}
-        
+
 <!-- Optional JavaScript -->
 {% block optional_js %}
 <script>
@@ -62,13 +62,13 @@
         var url = '/api/v1/images/';
         var token = localStorage.getItem('token');
         var headerParams = {'Authorization':'Bearer ' + token};
-        
+
         $('#add_button').on('click', function(event) {
             // 高さを取得
             var h = $(window).height();
             // ローディング画面表示
             $('#loader-bg ,#loader').height(h).css('display','block');
-            
+
             // 通信開始
             var form_data = new FormData();
         	var files = $('#files')[0].files;
@@ -77,7 +77,7 @@
         	});
         	var filter = $('#filter').val()
         	form_data.append('image_filter', filter);
-            
+
             // Ajaxで送信
             $.ajax({
                 url: url,

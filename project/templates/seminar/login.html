@@ -7,10 +7,10 @@
       <div class='col-12'>
         <!-- 高さ調整 -->
         <div style='height:150px;'></div>
-        
+
         <!--タイトル-->
-        <h1 class="h3 mb-3 font-weight-normal">PHOTOS</h1>
-        
+        <h1 class="h3 mb-3 font-weight-normal">PHOTOS 2</h1>
+
         <!--フォームアイテム-->
         <input type="text" id="account_field" class="form-control" placeholder="アカウント名" required autofocus>
         <input type="password" id="password_field" class="form-control" placeholder="パスワード" required autocomplete>
@@ -18,7 +18,7 @@
         <!--ボタン-->
         <button id='login_button' class="btn btn-lg btn-primary btn-block" type="button">ログイン</button>
       </div>
-      
+
       <!--登録ページに移動-->
       <a href="register" class='col-12 text-muted'>アカウントをつくる</a>
     </form>
@@ -32,7 +32,7 @@
     </div>
 </div>
 {% endblock %}
-        
+
 <!-- Optional JavaScript -->
 {% block optional_js %}
 <script>
@@ -50,7 +50,7 @@
       }).done(function(response) {
         // localStorageに保存
         localStorage.setItem('token', response.token);
-        
+
         // 画面遷移
         window.location.href = '/home';
       }).fail(function(XMLHttpRequest, textStatus, errorThrown) {

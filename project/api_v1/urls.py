@@ -7,11 +7,11 @@ urlpatterns = [
     url(r'^images/$', views.images),
 ]
 
-# # api viewer (debug用)
-# from rest_framework import routers
-# from .views import UserViewSet, TokenViewSet, ImageViewSet
+# api viewer (debug用)
+from rest_framework import routers
+from .views import UserViewSet, TokenViewSet, ImageViewSet
 
-# router = routers.DefaultRouter()
-# router.register(r'user', UserViewSet)
-# router.register(r'token', TokenViewSet)
-# router.register(r'image', ImageViewSet)
+router = routers.DefaultRouter()
+router.register(r'user', UserViewSet)
+router.register(r'token', TokenViewSet)
+router.register(r'image', ImageViewSet)

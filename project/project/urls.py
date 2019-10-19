@@ -21,19 +21,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # # api viewer(debug用)
-# from api_v1.urls import router as api_v1_router
+from api_v1.urls import router as api_v1_router
 from api_v1 import views
 
 urlpatterns = [
     # ルートをseminarアプリに任せる
     url('^', include('seminar.urls')),
-    
+
     # apiアプリ
     url(r'^api/v1/', include('api_v1.urls')),
-    
-    # # api viewer(debug用)
-    # url(r'^api/', include(api_v1_router.urls)),
-    
+
+    # api viewer(debug用)
+    url(r'^api/', include(api_v1_router.urls)),
+
     # 管理画面
     # path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # uploaded_file下を見えるようにする

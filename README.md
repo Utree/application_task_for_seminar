@@ -9,12 +9,13 @@ https://qiita.com/yuuki_sekiya/private/a6a0d87917425227abf4
 ## 環境構築
 ```
 $ python3 -m venv penv
-$ source penv penv/bin/activate
+$ source penv/bin/activate
 $ pip install  -r requirements.txt
 ```
 
 ## 使い方
 ```
+cd project/
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver

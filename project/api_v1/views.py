@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 # シリアライザ (db操作用のController的な役割)
-from api_v1.serializers import UserSerializer, TokenSerializer, ImageSerializer
+from api_v1.serializers import UserSerializer, TokenSerializer, ImageSerializer, PostSerializer, FavoriteSerializer
 # パスワードhasher
 from django.contrib.auth.hashers import make_password, check_password
 # Json形成
@@ -167,7 +167,7 @@ def images(request):
 # api viewer(debug用)
 import django_filters
 from rest_framework import viewsets, filters
-from api_v1.models import User, Token, Image
+from api_v1.models import User, Token, Image, Post, Favorite
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
@@ -181,3 +181,11 @@ class TokenViewSet(viewsets.ModelViewSet):
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+class FavoriteViewSet(viewsets.ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer

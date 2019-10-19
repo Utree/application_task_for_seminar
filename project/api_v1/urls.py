@@ -9,9 +9,11 @@ urlpatterns = [
 
 # api viewer (debug用)
 from rest_framework import routers
-from .views import UserViewSet, TokenViewSet, ImageViewSet
+from .views import UserViewSet, TokenViewSet, ImageViewSet, PostViewSet, FavoriteViewSet
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet)
 router.register(r'token', TokenViewSet)
 router.register(r'image', ImageViewSet)
+router.register(r'post', PostViewSet)
+router.register(r'favorite', FavoriteViewSet)

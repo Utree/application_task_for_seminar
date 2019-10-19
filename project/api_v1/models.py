@@ -37,7 +37,7 @@ class Token(models.Model):
     )
     # トークン生成時のタイムスタンプ(tokenに有効期限をつけることを見越して、作った。)
     creation_date = models.DateTimeField(auto_now_add=True)
-    
+
 
 # 画像のURL保存用テーブル
 class Image(models.Model):
@@ -49,4 +49,33 @@ class Image(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     # イメージ追加時のタイムスタンプ(デバッグ用)
     creation_date = models.DateTimeField(auto_now_add=True)
-    
+
+# 投稿された内容を管理するテーブル
+class Post(models.Model):
+    # ユーザID(Userが削除されるとこのレコードも削除される)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    # 投稿した日時
+    date = models.DateTimeField(auto_now_add=True)
+    # 投稿するテキスト
+    text = models.CharField(
+        max_length=300,
+        blank=True,
+        null=True,
+        )
+    # 投稿する画像(１つの投稿につき１画像)
+    img_url = models.ImageField(upload_to="media/images")
+    # いいねの数
+    like_cnt = models.IntegerField()
+
+
+# どのユーザがどの投稿にいいねしたかを管理するテーブル
+class Favorite(models.Model):
+    # ユーザID(Userが削除されるとこのレコードも削除される)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    # 投稿ID（Postが削除されるとこのレコードも削除される）
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    # タイムスタンプ
+    create_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together=(("user_id","post_id"))

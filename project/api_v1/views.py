@@ -17,11 +17,66 @@ from django.utils import timezone
 import os.path
 # import for file upload
 import os
+# レスポンス
+from rest_framework.response import Response
+
+
 
 # ファイルの保存先のパス
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOADE_DIR = os.path.join(BASE_DIR, 'uploaded_files/api_v1/images')
 
+# サーチ関数（緯度，経度から周辺情報を取得）
+import requests
+import urllib.error
+import urllib.request
+import json
+
+
+def search(lat, lon):
+    baseurl = 'https://map.yahooapis.jp/search/local/V1/localSearch'
+    params = {
+        'appid': 'dj00aiZpPUxkZnlIN0YwM3dZNSZzPWNvbnN1bWVyc2VjcmV0Jng9MmU-',
+        'output': 'json',
+        'sort': 'score',
+        'start': 1,
+        'results': '20',
+        'lat': str(lat),
+        'lon': str(lon),
+        'dist': 1,
+    }
+    url = '{}?{}'.format(baseurl, urllib.parse.urlencode(params))
+    res = requests.get(url)
+    result = []
+    ydf = json.loads(res.text)
+    search_result = []
+
+    features = ydf['Feature']
+    if ydf['ResultInfo']['Count']:
+        total = ydf['ResultInfo']['Total']
+
+        for f in features:
+            if f['Geometry']['Type'] == 'point':
+                ll = f['Geometry']['Coordinates'].split(',')
+                poi = {
+                    'uid': f['Property']['Uid'],
+                    'name': f['Name'],
+                    'station': f['Property']['Station'],
+                    'lat': ll[1],
+                    'lon': ll[0]
+                }
+                result.append(poi)
+
+        for i, poi in enumerate(result, 1):
+            search_result.append(
+                '{uid},{name},{lon},{lat}'.format(
+                    name=poi['name'],
+                    uid=poi['uid'],
+                    lon=poi['lon'],
+                    lat=poi['lat']
+                )
+            )
+    return search_result
 
 # ユーザー登録API
 @csrf_exempt # APIなので、csrf対策を無効にする
@@ -161,8 +216,38 @@ def images(request):
     else:
         return HttpResponse("不正なリクエスト", status=400)
 
+import json
+# レコメンドAPI
+@csrf_exempt
+def reccomend(request):
+    if request.method == 'GET':
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        response = HttpResponse(json.dumps(serializer.data, ensure_ascii=False), status=200)
+        response['content-type'] = 'application/json; charset=utf-8'
+        return response
 
+@csrf_exempt
+def get_user_post(request):
+    if request.method == 'POST':
+    
+        user_id = int(request.POST['user_id'])
+        posts = Post.objects.filter(user_id=user_id)
+        serializer = PostSerializer(posts, many=True)
+        response = HttpResponse(json.dumps(serializer.data, ensure_ascii=False), status=200)
+        response['content-type'] = 'application/json; charset=utf-8'
+        return response
 
+# @csrf_exempt
+# def set_favorite(request):
+#     if request.method == 'POST':
+#         user_id = int(request.POST['user_id'])
+#         post_id = int(request.POST['post_id'])
+#         post = Post.objects.filter(id=post_id)
+#         serializer = PostSerializer(post)
+#         response = HttpResponse(json.dumps(serializer.data, ensure_ascii=False), status=200)
+#         response['content-type'] = 'application/json; charset=utf-8'
+#         return HttpResponse("Success")
 
 # api viewer(debug用)
 import django_filters

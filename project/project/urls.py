@@ -29,10 +29,10 @@ urlpatterns = [
     url('^', include('seminar.urls')),
 
     # apiアプリ
-    url(r'^api/v1/', include('api_v1.urls')),
+    url(r'^v1/', include('api_v1.urls')),
 
     # api viewer(debug用)
-    url(r'^api/', include(api_v1_router.urls)),
+    url(r'^v1/', include(api_v1_router.urls)),
 
     # 管理画面
     # path('admin/', admin.site.urls),

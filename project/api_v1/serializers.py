@@ -79,7 +79,7 @@ class ImageSerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'user_id', 'date', 'text', 'img_url', 'like_cnt')
+        fields = ('id', 'user_id', 'date', 'text', 'img_url', 'map_lat', 'map_lon', 'like_cnt')
 
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:

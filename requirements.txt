@@ -4,7 +4,7 @@ Django==2.1.2
 django-filter==2.0.0
 djangorestframework==3.8.2
 numpy==1.15.2
-opencv-python==3.4.3.18
+opencv-python==4.2.0.32
 Pillow==5.3.0
 pycparser==2.19
 pytz==2018.5
